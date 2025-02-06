@@ -2,7 +2,7 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "lib": ["ESNext"],
+        "lib": ["esnext"],
         "target": "ESNext",
         "moduleResolution": "NodeNext",
         "module": "NodeNext",

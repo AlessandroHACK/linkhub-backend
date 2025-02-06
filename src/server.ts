@@ -11,5 +11,5 @@ connectDB()
 app.use(express.json())
 
 //rounting
-app.use('/', router)
+app.use('/api', router)
 export default app
