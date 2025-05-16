@@ -25,7 +25,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     try {
         const decoded = decodedToken(token)
         if (typeof decoded === 'object' && decoded.id) {
-            const user = await User.findById(decoded.id).select('_id name email')
+            const user = await User.findById(decoded.id).select('-password') //todo menos el password
             if (user) {
                 req.user = user
                 next()

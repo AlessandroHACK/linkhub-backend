@@ -5,7 +5,9 @@ export interface IUser extends Document {
     name: string
     email: string
     password: string
-
+    description: string
+    image: string
+    links: string
 }
 
 const userSchema: Schema = new Schema({
@@ -33,6 +35,19 @@ const userSchema: Schema = new Schema({
         required: true,
         trim: true,
     },
+    description: {
+        type: String,
+        default: '',
+    },
+    image: {
+        type: String,
+        default: ''
+    },
+    links: {
+        type: String,
+        default: '[]'
+    }
+
 
 })
 
