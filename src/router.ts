@@ -27,6 +27,7 @@ router.get('/user',
     authenticate,
     AuthController.user
 )
+router.post('/logout', authenticate, AuthController.logout);
 
 router.patch('/user',
     body('handle').notEmpty().withMessage('El handle no puede ir vacio'),
