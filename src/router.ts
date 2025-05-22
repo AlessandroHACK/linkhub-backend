@@ -2,7 +2,7 @@ import { Router } from "express";
 import { AuthController } from "./controllers/AuthController";
 import { body, param } from "express-validator";
 import { handleInputErrors } from "./middleware/validation";
-import { authenticate } from "./middleware/auth";
+import { authenticate, checkUserExistsByHandle } from "./middleware/auth";
 
 
 const router = Router();
@@ -22,13 +22,13 @@ router.post('/login',
     handleInputErrors,
     AuthController.login
 )
+router.post('/logout', authenticate, AuthController.logout);
 
+//User
 router.get('/user',
     authenticate,
     AuthController.user
 )
-router.post('/logout', authenticate, AuthController.logout);
-
 router.patch('/user',
     body('handle').notEmpty().withMessage('El handle no puede ir vacio'),
     handleInputErrors,
@@ -55,4 +55,10 @@ router.post('/update-password',
     handleInputErrors,
     AuthController.updateCurrentUserPassword
 )
+
+router.get('/:handle',
+    handleInputErrors,
+    checkUserExistsByHandle, 
+    AuthController.getUserByHandle
+);
 export default router

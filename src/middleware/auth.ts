@@ -10,6 +10,7 @@ declare global {
     }
 }
 
+// Middleware de autenticación JWT
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     // 1. Obtener el token de las cookies 
     const token = req.cookies.access_token
@@ -50,9 +51,30 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
             path: '/',
         })
 
-        // 7. Manejar diferentes tipos de errores
+        // 7. Maneja de errores
         const errorMessage = error instanceof Error ? error.message : 'Error de autenticación'
          res.status(401).json({ error: errorMessage })
          return
     }
 }
+
+
+// Middleware para verificar existencia de usuario por handle
+export const checkUserExistsByHandle = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { handle } = req.params;
+        const user = await User.findOne({ handle }).select('-password -__v -email -_id');
+        
+           if(!user){
+            const error = new Error('El usuario no existe')
+            res.status(404).json({error: error.message})
+            return
+           }
+
+       
+        req.user = user;
+        next();
+    } catch (error) {
+        res.status(500).json({ error: "Hubo un error al buscar el usuario" });
+    }
+};

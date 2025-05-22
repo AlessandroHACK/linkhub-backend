@@ -43,95 +43,95 @@ export class AuthController {
         }
     }
 
-static login = async (req: Request, res: Response) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        
-        if (!user) {
-            const error = new Error('Usuario no encontrado');
-             res.status(404).json({ error: error.message });
-             return
-        }
+    static login = async (req: Request, res: Response) => {
+        try {
+            const { email, password } = req.body;
+            const user = await User.findOne({ email });
 
-        // Verificar contraseña
-        const isPasswordCorrect = await checkPassword(password, user.password);
-        if (!isPasswordCorrect) {
-            const error = new Error('Contraseña incorrecta');
-             res.status(401).json({ error: error.message });
-             return
-        }
-
-        // Generar JWT
-        const token = generateJWT({ id: user.id });
-
-        // Configurar cookie HTTP-only segura
-        res.cookie('access_token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
-            path: '/',
-        });
-
-        // Devolver datos básicos del usuario (sin información sensible)
-         res.json({
-            success: true,
-            message: 'Sesión iniciada correctamente',
-            user: {
-                id: user.id,
-                email: user.email,
-                handle: user.handle,
-                name: user.name
+            if (!user) {
+                const error = new Error('Usuario no encontrado');
+                res.status(404).json({ error: error.message });
+                return
             }
-        });
-        return
-        
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error en el servidor" });
-        return 
-    }
-}
 
-static user = async (req: Request, res: Response) => {
-    try {
-        // Verificar que el usuario esté autenticado (middleware ya lo hizo)
-        if (!req.user) {
-            const error = new Error('No autorizado');
-             res.status(401).json({ error: error.message });
-             return
+            // Verificar contraseña
+            const isPasswordCorrect = await checkPassword(password, user.password);
+            if (!isPasswordCorrect) {
+                const error = new Error('Contraseña incorrecta');
+                res.status(401).json({ error: error.message });
+                return
+            }
+
+            // Generar JWT
+            const token = generateJWT({ id: user.id });
+
+            // Configurar cookie HTTP-only segura
+            res.cookie('access_token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
+                path: '/',
+            });
+
+            // Devolver datos básicos del usuario (sin información sensible)
+            res.json({
+                success: true,
+                message: 'Sesión iniciada correctamente',
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    handle: user.handle,
+                    name: user.name
+                }
+            });
+            return
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Error en el servidor" });
+            return
         }
-
-
-        res.json(req.user);
-        return 
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error en el servidor" });
-        return
     }
-}
 
-static logout = async (req: Request, res: Response) => {
-    try {
-        // Eliminar la cookie de autenticación
-        res.clearCookie('token', {
-            path: '/',
-            sameSite: 'strict',
-            secure: process.env.NODE_ENV === 'production',
-        });
+    static user = async (req: Request, res: Response) => {
+        try {
+            // Verificar que el usuario esté autenticado (middleware ya lo hizo)
+            if (!req.user) {
+                const error = new Error('No autorizado');
+                res.status(401).json({ error: error.message });
+                return
+            }
 
-         res.json({ success: true, message: 'Sesión cerrada correctamente' });
-         return
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error al cerrar sesión" });
-        return
+            res.json(req.user);
+            return
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Error en el servidor" });
+            return
+        }
     }
-}
+
+    static logout = async (req: Request, res: Response) => {
+        try {
+            // Eliminar la cookie de autenticación
+            res.clearCookie('token', {
+                path: '/',
+                sameSite: 'strict',
+                secure: process.env.NODE_ENV === 'production',
+            });
+
+            res.json({ success: true, message: 'Sesión cerrada correctamente' });
+            return
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Error al cerrar sesión" });
+            return
+        }
+    }
     static updateProfile = async (req: Request, res: Response) => {
 
         try {
@@ -160,14 +160,14 @@ static logout = async (req: Request, res: Response) => {
         try {
             form.parse(req, (error, fields, files) => {
 
-                cloudinary.uploader.upload(files.file[0].filepath, { }, async function (error, result) {
+                cloudinary.uploader.upload(files.file[0].filepath, {}, async function (error, result) {
                     if (error) {
                         res.status(500).json({ error: "Hubo un error" })
                     }
-                    if(result){
+                    if (result) {
                         req.user.image = result.secure_url
                         await req.user.save()
-                        res.json({image: result.secure_url})
+                        res.json({ image: result.secure_url })
                     }
                 })
             })
@@ -185,8 +185,8 @@ static logout = async (req: Request, res: Response) => {
         const isPasswordCorrect = await checkPassword(current_password, user.password)
         if (!isPasswordCorrect) {
             const error = new Error('Password incorrecto')
-             res.status(401).json({ error: error.message })
-             return
+            res.status(401).json({ error: error.message })
+            return
         }
 
         try {
@@ -197,4 +197,15 @@ static logout = async (req: Request, res: Response) => {
             res.status(500).json({ error: "Hubo un error" })
         }
     }
+
+    static getUserByHandle = async (req: Request, res: Response) => {
+        try {
+            // El usuario ya fue encontrado por el middleware y está en req.user
+            const user = req.user;
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(500).json({ error: "Hubo un error" });
+        }
+    }
 }
+
