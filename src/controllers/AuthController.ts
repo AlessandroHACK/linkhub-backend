@@ -58,7 +58,7 @@ export class AuthController {
             const isPasswordCorrect = await checkPassword(password, user.password);
             if (!isPasswordCorrect) {
                 const error = new Error('Contraseña incorrecta');
-                res.status(401).json({ error: error.message });
+                res.status(403).json({ error: error.message });
                 return
             }
 
@@ -117,7 +117,7 @@ export class AuthController {
     static logout = async (req: Request, res: Response) => {
         try {
             // Eliminar la cookie de autenticación
-            res.clearCookie('token', {
+            res.clearCookie('access_token', {
                 path: '/',
                 sameSite: 'strict',
                 secure: process.env.NODE_ENV === 'production',
@@ -207,5 +207,24 @@ export class AuthController {
             res.status(500).json({ error: "Hubo un error" });
         }
     }
+
+ 
+static searchByHandle = async (req: Request, res: Response) => {
+    try {
+        console.log('BODY:', req.body);
+
+        const { handle } = req.body
+        const userExists = await User.findOne({handle})
+        if(userExists) {
+            const error = new Error(`${handle} ya está registrado`)
+             res.status(409).json({error: error.message})
+             return
+        }
+        res.send(`${handle} está disponible`)
+    } catch (error) {
+            res.status(500).json({ error: "Hubo un error" });
+        }
+}
+
 }
 
