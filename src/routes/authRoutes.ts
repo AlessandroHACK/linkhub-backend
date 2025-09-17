@@ -4,10 +4,12 @@ import { body, param } from "express-validator";
 import { AuthController } from "../controllers/AuthController";
 import { handleInputErrors } from "../middleware/validation";
 import { authenticate, checkUserExistsByHandle } from "../middleware/auth";
+import { limiter } from "../config/limiter";
 
 
 
 const router = Router();
+router.use(limiter)
 
 //Autenticacion y registro
 router.post('/register',
