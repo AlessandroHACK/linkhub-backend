@@ -149,7 +149,7 @@ export class AuthController {
             req.user.handle = handle
             req.user.links = links
             await req.user.save()
-            res.send('Perfil Actualizado Correctamente')
+            res.json('Perfil Actualizado Correctamente')
         } catch (error) {
             res.status(500).json({ error: "Hubo un error" })
         }
@@ -192,7 +192,7 @@ export class AuthController {
         try {
             user.password = await hashPassword(password) //hash nuevo password
             await user.save()
-            res.send('El password se modifico correctamente')
+            res.json('El password se modifico correctamente')
         } catch (error) {
             res.status(500).json({ error: "Hubo un error" })
         }
@@ -211,7 +211,7 @@ export class AuthController {
  
 static searchByHandle = async (req: Request, res: Response) => {
     try {
-        console.log('BODY:', req.body);
+        // console.log('BODY:', req.body);
 
         const { handle } = req.body
         const userExists = await User.findOne({handle})
@@ -220,7 +220,7 @@ static searchByHandle = async (req: Request, res: Response) => {
              res.status(409).json({error: error.message})
              return
         }
-        res.send(`${handle} está disponible`)
+        res.json(`${handle} está disponible`)
     } catch (error) {
             res.status(500).json({ error: "Hubo un error" });
         }
