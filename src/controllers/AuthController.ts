@@ -13,14 +13,14 @@ export class AuthController {
         try {
             const { email, password } = req.body
 
-            //verificar si el user ya existe
+
             const userExists = await User.findOne({ email })
             if (userExists) {
                 const error = new Error('Un usuario con ese mail ya esta registrado')
                 res.status(409).json({ error: error.message })
                 return
             }
-            //verificar si el handle ya existe
+
             const handle = slug(req.body.handle, '')
             const handleExists = await User.findOne({ handle })
             if (handleExists) {
@@ -29,13 +29,13 @@ export class AuthController {
                 return
 
             }
-            //crear el user
+
             const user = new User(req.body)
-            //hash password
+
             user.password = await hashPassword(password)
-            //asignar el handle
+
             user.handle = handle
-            //guardra el User
+
             await user.save()
             res.status(201).send('Registro Creado Correctamente')
         } catch (error) {
@@ -54,7 +54,7 @@ export class AuthController {
                 return
             }
 
-            // Verificar contraseña
+
             const isPasswordCorrect = await checkPassword(password, user.password);
             if (!isPasswordCorrect) {
                 const error = new Error('Contraseña incorrecta');
@@ -62,19 +62,19 @@ export class AuthController {
                 return
             }
 
-            // Generar JWT
+   
             const token = generateJWT({ id: user.id });
 
-            // Configurar cookie HTTP-only segura
+
             res.cookie('access_token', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
-                maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
+                maxAge: 1000 * 60 * 60 * 24 * 7, 
                 path: '/',
             });
 
-            // Devolver datos básicos del usuario (sin información sensible)
+
             res.json({
                 success: true,
                 message: 'Sesión iniciada correctamente',
@@ -96,7 +96,7 @@ export class AuthController {
 
     static user = async (req: Request, res: Response) => {
         try {
-            // Verificar que el usuario esté autenticado (middleware ya lo hizo)
+           
             if (!req.user) {
                 const error = new Error('No autorizado');
                 res.status(401).json({ error: error.message });
@@ -116,7 +116,7 @@ export class AuthController {
 
     static logout = async (req: Request, res: Response) => {
         try {
-            // Eliminar la cookie de autenticación
+
             res.clearCookie('access_token', {
                 path: '/',
                 sameSite: 'strict',
@@ -144,7 +144,7 @@ export class AuthController {
                 return
             }
 
-            // Actualizar el usuario
+          
             req.user.description = description
             req.user.handle = handle
             req.user.links = links
@@ -181,7 +181,7 @@ export class AuthController {
 
         const user = await User.findById(req.user.id)
 
-        //revisar password
+
         const isPasswordCorrect = await checkPassword(current_password, user.password)
         if (!isPasswordCorrect) {
             const error = new Error('Password incorrecto')
@@ -200,7 +200,7 @@ export class AuthController {
 
     static getUserByHandle = async (req: Request, res: Response) => {
         try {
-            // El usuario ya fue encontrado por el middleware y está en req.user
+           
             const user = req.user;
             res.status(200).json(user);
         } catch (error) {
@@ -211,7 +211,7 @@ export class AuthController {
  
 static searchByHandle = async (req: Request, res: Response) => {
     try {
-        // console.log('BODY:', req.body);
+ 
 
         const { handle } = req.body
         const userExists = await User.findOne({handle})

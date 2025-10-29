@@ -51,7 +51,7 @@ router.post(
   '/search',
   body('handle')
     .notEmpty()
-    .withMessage('El handle no puede ir vacio'), // <-- este mensaje es el que aparece
+    .withMessage('El handle no puede ir vacio'), 
   handleInputErrors,
   AuthController.searchByHandle
 );
